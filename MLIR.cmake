@@ -1,60 +1,33 @@
-# Path to LLVM source folder.
-if(DEFINED ENV{LLVM_PROJ_SRC})
-  set(LLVM_PROJ_SRC $ENV{LLVM_PROJ_SRC})
-  if(EXISTS ${LLVM_PROJ_SRC})
-    message(STATUS "LLVM_PROJ_SRC " ${LLVM_PROJ_SRC})
-  else()
-    message(FATAL_ERROR "The path specified by LLVM_PROJ_SRC does not exist: "
-            ${LLVM_PROJ_SRC})
-  endif()
+set(LLVM_PROJ_SRC ${LLVM_PROJ_SRC} CACHE PATH "Path to LLVM source folder")
+set(LLVM_PROJ_BUILD ${LLVM_PROJ_BUILD} CACHE PATH "Path to LLVM build folder")
+
+if(IS_DIRECTORY ${LLVM_PROJ_SRC})
+  message(STATUS "LLVM_PROJ_SRC: " ${LLVM_PROJ_SRC})
 else()
-  message(FATAL_ERROR "env variable LLVM_PROJ_SRC not set")
+  message(FATAL_ERROR "The path specified by LLVM_PROJ_SRC does not exist: " ${LLVM_PROJ_SRC})
 endif()
 
-# Path to LLVM build folder
-if(DEFINED ENV{LLVM_PROJ_BUILD})
-  set(LLVM_PROJ_BUILD $ENV{LLVM_PROJ_BUILD})
-  if(EXISTS ${LLVM_PROJ_BUILD})
-    message(STATUS "LLVM_PROJ_BUILD " ${LLVM_PROJ_BUILD})
-  else()
-    message(FATAL_ERROR "The path specified by LLVM_PROJ_BUILD does not exist: "
-            ${LLVM_PROJ_BUILD})
-  endif()
+if(IS_DIRECTORY ${LLVM_PROJ_BUILD})
+  message(STATUS "LLVM_PROJ_BUILD: " ${LLVM_PROJ_BUILD})
 else()
-  message(FATAL_ERROR "env variable LLVM_PROJ_BUILD not set")
+  message(FATAL_ERROR "The path specified by LLVM_PROJ_BUILD does not exist: " ${LLVM_PROJ_BUILD})
 endif()
 
-# LLVM project lib folder
-if (ENV{LLVM_PROJECT_LIB})
-  set(LLVM_PROJECT_LIB $ENV{LLVM_PROJECT_LIB})
-else()
-  if(MSVC)
-    if (CMAKE_BUILD_TYPE)
-      set(LLVM_PROJECT_LIB ${LLVM_PROJ_BUILD}/${CMAKE_BUILD_TYPE}/lib)
-    else()
-      set(LLVM_PROJECT_LIB ${LLVM_PROJ_BUILD}/release/lib)
-    endif()  
+if(MSVC)
+  if(CMAKE_BUILD_TYPE)
+    set(LLVM_PROJ_BIN ${LLVM_PROJ_BUILD}/${CMAKE_BUILD_TYPE}/bin)
+    set(LLVM_PROJECT_LIB ${LLVM_PROJ_BUILD}/${CMAKE_BUILD_TYPE}/lib)
   else()
-    set(LLVM_PROJECT_LIB ${LLVM_PROJ_BUILD}/lib)
+    set(LLVM_PROJ_BIN ${LLVM_PROJ_BUILD}/Release/bin)
+    set(LLVM_PROJECT_LIB ${LLVM_PROJ_BUILD}/Release/lib)
   endif()
+else()
+  set(LLVM_PROJ_BIN ${LLVM_PROJ_BUILD}/bin)
+  set(LLVM_PROJECT_LIB ${LLVM_PROJ_BUILD}/lib)
 endif()
-message(STATUS "LLVM_PROJECT_LIB:" ${LLVM_PROJECT_LIB})
 
-# LLVM project bin folder
-if (ENV{LLVM_PROJ_BIN})
-  set(LLVM_PROJ_BIN $ENV{LLVM_PROJ_BIN})
-else()
-  if(MSVC)
-    if (CMAKE_BUILD_TYPE)
-      set(LLVM_PROJ_BIN ${LLVM_PROJ_BUILD}/${CMAKE_BUILD_TYPE}/bin)
-    else()
-      set(LLVM_PROJ_BIN ${LLVM_PROJ_BUILD}/Release/bin)
-    endif()
-  else()
-    set(LLVM_PROJ_BIN ${LLVM_PROJ_BUILD}/bin)
-  endif()
-endif()
-message(STATUS "LLVM_PROJ_BIN:" ${LLVM_PROJ_BIN})
+message(STATUS "LLVM_PROJ_BIN: " ${LLVM_PROJ_BIN})
+message(STATUS "LLVM_PROJECT_LIB: " ${LLVM_PROJECT_LIB})
 
 # Include paths for MLIR
 set(LLVM_SRC_INCLUDE_PATH ${LLVM_PROJ_SRC}/llvm/include)
@@ -204,7 +177,7 @@ set(MLIRLibs
         ${MLIREDSC}
         ${MLIRExecutionEngine}
         ${MLIRIR}
-        ${MLIRLLVMIRTransforms}        
+        ${MLIRLLVMIRTransforms}
         ${MLIRSCFToStandard}
         ${MLIRSCF}
         ${MLIRLoopAnalysis}
